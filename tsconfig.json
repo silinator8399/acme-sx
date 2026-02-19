@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",            // Node 18+ kann das gut
+    "module": "CommonJS",          // Node Module Standard
+    "declaration": true,           // Typdefinitionen erzeugen
+    "outDir": "./dist",            // Build Ausgabe
+    "rootDir": "./src",            // Source Folder
+    "strict": true,                // strenge Typprüfung
+    "esModuleInterop": true,       // für Importe von CommonJS Packages
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
