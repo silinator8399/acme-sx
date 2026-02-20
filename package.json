@@ -1,14 +1,28 @@
 {
   "name": "acme-sx",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ACME client for Node.js using the ACME protocol to generate certificate management.",
-  "main": "main.js",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  
   "scripts": {
     "start": "ts-node src/main.ts",
+    "build": "tsc -p tsconfig.json",
     "test": "ts-node test.ts"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/main.d.ts",
+      "default": "./dist/main.js"
+    }
   },
   "author": "Silas Manns",
   "license": "MIT",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "dependencies": {
     "acme-client": "^5.4.0",
     "express": "^5.2.1"
