@@ -1,9 +1,10 @@
 {
   "name": "acme-sx",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "ACME client for Node.js using the ACME protocol to generate certificate management.",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
+  "keywords": ["acme", "letsencrypt", "ssl", "certificate", "client"],
   "scripts": {
     "start": "ts-node src/main.ts",
     "build": "tsc -p tsconfig.json",
