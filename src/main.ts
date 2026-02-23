@@ -6,7 +6,7 @@ export {ACMEClientSX} from './client/acme_client';
 /**
  * Types
  */
-export {HOSTED_TYPE, ACMEClientOptions, IssueCertificateOptions, ACMEResponse, ACMEStoreResult} from './client/types';
+export {HOSTED_TYPE, ACMEClientOptions, IssueCertificateOptions, ACMEResponse, ACMEStoreResult, ACMEConvertPFXOptions} from './client/types';
 
 /**
  * Events

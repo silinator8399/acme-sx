@@ -6,6 +6,7 @@ It supports:
 
 - **Managed mode**: this package starts an HTTP challenge server for you.
 - **Self-hosted mode**: you provide the challenge directory and serve files yourself.
+- **PEM → PFX conversion**: convert generated PEM certificate/key files into a `.pfx` bundle.
 
 ---
 
@@ -15,6 +16,7 @@ It supports:
 - Automatic CSR generation
 - HTTP-01 challenge handling
 - Certificate + private key storage
+- PEM to PFX conversion (`convertToPFX`)
 - Typed event system for logs/errors
 - TypeScript-first API
 
@@ -111,6 +113,23 @@ if (result.success) {
 }
 ```
 
+### 6) Convert PEM certificate/key to PFX
+
+```ts
+const pfxResult: ACMEResponse<string> = await ACMEClientSX.convertToPFX({
+  certPemPath: "./certificates/example.com-cert.pem",
+  keyPemPath: "./certificates/example.com-key.pem",
+  domain: "example.com",
+  passphrase: "change-me"
+});
+
+if (pfxResult.success) {
+  console.log("PFX created at:", pfxResult.data);
+} else {
+  console.error("PFX conversion failed:", pfxResult.error);
+}
+```
+
 ---
 
 ## API Overview
@@ -137,6 +156,19 @@ Issues a certificate and stores:
 
 Returns `ACMEResponse<ACMEStoreResult>`.
 
+### `ACMEClientSX.convertToPFX(options)`
+
+Converts existing PEM certificate/key files into a PFX file.
+
+`options`:
+
+- `certPemPath: string` – path to certificate PEM
+- `keyPemPath: string` – path to private key PEM
+- `domain: string` – used for output naming
+- `passphrase: string` – password for resulting PFX
+
+Returns `ACMEResponse<string>` where `data` is the created PFX path.
+
 ---
 
 ## Important Notes
@@ -145,6 +177,7 @@ Returns `ACMEResponse<ACMEStoreResult>`.
 - Your domain must resolve to the machine running this flow.
 - Use `staging: true` while testing to avoid Let's Encrypt rate limits.
 - In managed mode, the package uses a local `./acme-challenges` directory.
+- Store your PFX passphrase securely (e.g., environment variables / secrets manager).
 
 ---
 

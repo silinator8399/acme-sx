@@ -69,6 +69,13 @@ export interface IssueCertificateOptions{
 
 }
 
+export interface ACMEConvertPFXOptions{
+    keyPemPath: string, 
+    certPemPath: string,
+    passphrase: string,
+    domain: string
+}
+
 export interface ACMEStoreResult{
     domain: string,
     certPath: string

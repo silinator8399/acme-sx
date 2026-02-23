@@ -3,8 +3,11 @@ import { HostedManaged } from "../hosted/managed/hosted-managed";
 import { HostedSelf } from "../hosted/self/self-hostet";
 import { ACMEEvents } from "../main";
 import acme from 'acme-client';
-import { ACMEClientOptions, ACMEResponse, ACMEStoreResult, HOSTED_TYPE, IssueCertificateOptions } from "./types";
+import { ACMEClientOptions, ACMEConvertPFXOptions, ACMEResponse, ACMEStoreResult, HOSTED_TYPE, IssueCertificateOptions } from "./types";
 import { ACMESM } from "../acme/acme";
+import fs from "fs"
+import * as forge from "node-forge";
+import path from "path";
 
 export class ACMEClientSX{
 
@@ -84,5 +87,53 @@ export class ACMEClientSX{
         } finally {
             if(hostedManager && this.options.hosted === HOSTED_TYPE.MANAGED) await hostedManager.stopServer()
         }
+    }
+
+    public static async convertToPFX(options: ACMEConvertPFXOptions): Promise<ACMEResponse<string>>{
+
+        ACMEEvents.log(`Starting PEM to PFX conversion for domain: ${options.domain}`);
+
+        let keyPem: Buffer;
+        let certPem: Buffer;
+
+        if(!fs.existsSync(options.certPemPath)){
+            const errorText: string = `Certificate PEM file not found at path: ${options.certPemPath}`;
+            ACMEEvents.error(errorText);
+            return { success: false, error: errorText }
+        }
+
+        if(!fs.existsSync(options.keyPemPath)){
+            const errorText: string = `Key PEM file not found at path: ${options.keyPemPath}`;
+            ACMEEvents.error(errorText);
+            return { success: false, error: errorText }
+        }
+
+        try {
+            certPem = fs.readFileSync(options.certPemPath);
+            keyPem = fs.readFileSync(options.keyPemPath);
+
+            const p12Asn1: forge.asn1.Asn1 = forge.pkcs12.toPkcs12Asn1(
+                forge.pki.privateKeyFromPem(keyPem.toString()),
+                forge.pki.certificateFromPem(certPem.toString()),
+                options.passphrase,
+                {algorithm: "3des"}
+            )
+
+            const p12Der: forge.util.ByteStringBuffer = forge.asn1.toDer(p12Asn1);
+
+            const filePath: string = path.join(path.dirname(options.certPemPath), `${options.domain}.pfx`);
+
+            fs.writeFileSync(filePath, Buffer.from(p12Der.getBytes(), 'binary'));
+            ACMEEvents.log(`Successfully converted PEM to PFX at path: ${filePath}`);
+            return { success: true, data: filePath }
+
+        
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            ACMEEvents.error(`Failed to convert to PFX: ${errorMessage}`);
+            return { success: false, error: errorMessage }
+        }
+
     }
 }
